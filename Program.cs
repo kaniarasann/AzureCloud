@@ -1,7 +1,14 @@
+using AzureSQL.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
+builder.Services.AddDbContext<AzureDBContext>(option => {
+    option.UseSqlServer(builder.Configuration.GetConnectionString("AzureConnectionString"), (sqlServerOption) => { sqlServerOption.EnableRetryOnFailure(); });
+});
 
 var app = builder.Build();
 
